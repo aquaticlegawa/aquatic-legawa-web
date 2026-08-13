@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, viewport-fit=cover">
+<title>Aquatic Legawa's Web</title>
+
+<link rel="icon" type="image/png" href="assets/logo-icon.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0B4245">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Aq. Legawa">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="css/tailwind.min.css">
+<link rel="stylesheet" href="css/style.css">
+
+<!-- Supabase client & pembaca file Excel -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+</head>
+
+<body class="grain">
+
+<!-- =========================================================
+     VIEW: LOGIN
+========================================================= -->
+<div id="view-login" class="view active min-h-screen w-full lg:grid lg:grid-cols-2">
+
+  <div class="relative overflow-hidden text-white flex flex-col justify-between px-6 sm:px-10 lg:px-14 py-10 lg:py-14 min-h-[300px] lg:min-h-screen" style="background:var(--teal-900)">
+    <div class="hero-waves"></div>
+    <div class="hero-lanes"></div>
+
+    <div class="relative z-10 flex items-center gap-3">
+      <img src="assets/logo-icon.png" alt="Lambang Aquatic Legawa" class="h-11 w-11 lg:h-12 lg:w-12">
+      <span class="font-nav font-extrabold tracking-wide text-sm lg:text-base uppercase text-white/90">Aquatic Legawa</span>
+    </div>
+
+    <div class="relative z-10 mt-10 lg:mt-0">
+      <p class="eyebrow on-dark mb-3">Sistem Manajemen Klub</p>
+      <h1 class="font-display font-extrabold text-3xl sm:text-4xl lg:text-[3.2rem] leading-[1.06] max-w-md">
+        Satu kolam,<br>satu data,<br>seluruh t<span style="color:var(--garnet-500)">i</span>m.
+      </h1>
+      <p class="mt-5 max-w-sm text-white/70 text-sm sm:text-base leading-relaxed">
+        Kelola kehadiran, profil, invois, dan materi edukasi pelatih &amp; atlet Aquatic Legawa dalam satu portal.
+      </p>
+      <div class="mt-8 max-w-xs opacity-90 on-dark" id="login-lane-rope"></div>
+    </div>
+
+    <div class="relative z-10 hidden lg:flex items-center gap-6 text-white/50 text-xs font-medium font-nav">
+      <span>© 2026 Aquatic Legawa</span>
+      <span class="h-1 w-1 rounded-full bg-white/30"></span>
+      <span class="uppercase tracking-wide">Renang · Polo Air · Loncat Indah · Renang Indah</span>
+    </div>
+  </div>
+
+  <div class="flex items-center justify-center px-6 sm:px-10 py-12 lg:py-14" style="background:var(--paper)">
+    <div class="w-full max-w-sm">
+      <div class="lg:hidden flex items-center gap-2 mb-8">
+        <img src="assets/logo-icon.png" alt="Lambang Aquatic Legawa" class="h-9 w-9">
+        <span class="font-nav font-extrabold text-[var(--teal-900)] text-sm uppercase tracking-wide">Aquatic Legawa</span>
+      </div>
+
+      <div class="flex gap-1 p-1 rounded-[10px] mb-7" style="background:var(--teal-50)">
+        <button type="button" id="tab-login" class="auth-tab flex-1 py-2 rounded-[8px] text-sm font-semibold font-nav transition">Masuk</button>
+        <button type="button" id="tab-signup" class="auth-tab flex-1 py-2 rounded-[8px] text-sm font-semibold font-nav transition">Daftar</button>
+      </div>
+
+      <!-- ---- FORM MASUK ---- -->
+      <div id="panel-login">
+        <h2 class="font-display font-bold text-2xl text-ink">Masuk ke akun Anda</h2>
+        <p class="text-sm text-ink/60 mt-1.5 mb-6">Peran (Admin/Pelatih/Atlet) ditentukan otomatis dari akun Anda.</p>
+
+        <form id="login-form" class="space-y-5" novalidate>
+          <div>
+            <label for="email-input" class="block text-xs font-semibold uppercase tracking-wide text-ink/50 mb-1.5 font-nav">Email</label>
+            <input id="email-input" type="email" required autocomplete="username" placeholder="nama@aquaticlegawa.id" class="field">
+          </div>
+          <div>
+            <label for="password-input" class="block text-xs font-semibold uppercase tracking-wide text-ink/50 mb-1.5 font-nav">Kata sandi</label>
+            <input id="password-input" type="password" required autocomplete="current-password" placeholder="••••••••" class="field">
+          </div>
+
+          <p id="login-error" class="hidden text-xs rounded-[8px] px-3 py-2" style="background:var(--garnet-100); color:var(--garnet-700)"></p>
+
+          <button id="login-submit" type="submit" class="btn-primary w-full">
+            Masuk
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+          </button>
+        </form>
+        <p class="text-center text-xs text-ink/40 mt-6">Pelatih/Atlet baru? Klik tab <strong>Daftar</strong> di atas.</p>
+      </div>
+
+      <!-- ---- FORM DAFTAR (Pelatih/Atlet) ---- -->
+      <div id="panel-signup" class="hidden">
+        <h2 class="font-display font-bold text-2xl text-ink">Daftar akun baru</h2>
+        <p class="text-sm text-ink/60 mt-1.5 mb-6">Untuk Pelatih &amp; Atlet. Akun akan aktif setelah disetujui admin.</p>
+
+        <form id="signup-form" class="space-y-4" novalidate>
+          <div>
+            <label class="block text-xs font-semibold uppercase tracking-wide text-ink/50 mb-1.5 font-nav">Saya mendaftar sebagai</label>
+            <div class="grid grid-cols-2 gap-2">
+              <button type="button" data-signup-role="pelatih" class="role-btn">
+                <svg class="mx-auto h-5 w-5 text-[var(--teal-800)] mb-1" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m5-5.13a4 4 0 100-8 4 4 0 000 8zm6 0a4 4 0 10-.5-7.97"/></svg>
+                <span class="text-xs font-semibold font-nav text-ink">Pelatih</span>
+              </button>
+              <button type="button" data-signup-role="atlet" class="role-btn">
+                <svg class="mx-auto h-5 w-5 text-[var(--teal-800)] mb-1" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4l2.4 4.9 5.4.8-3.9 3.8.9 5.4L12 16.4 7.2 18.9l.9-5.4-3.9-3.8 5.4-.8L12 4z"/></svg>
+                <span class="text-xs font-semibold font-nav text-ink">Atlet</span>
+              </button>
+            </div>
+          </div>
+          <div>
+            <label for="signup-name" class="block text-xs font-semibold uppercase tracking-wide text-ink/50 mb-1.5 font-nav">Nama Lengkap</label>
+            <input id="signup-name" type="text" required placeholder="Nama sesuai identitas" class="field">
+          </div>
+          <div>
+            <label for="signup-email" class="block text-xs font-semibold uppercase tracking-wide text-ink/50 mb-1.5 font-nav">Email</label>
+            <input id="signup-email" type="email" required autocomplete="username" placeholder="nama@email.com" class="field">
+          </div>
+          <div>
+            <label for="signup-password" class="block text-xs font-semibold uppercase tracking-wide text-ink/50 mb-1.5 font-nav">Buat Kata Sandi</label>
+            <input id="signup-password" type="password" required minlength="6" autocomplete="new-password" placeholder="Minimal 6 karakter" class="field">
+          </div>
+
+          <p id="signup-error" class="hidden text-xs rounded-[8px] px-3 py-2" style="background:var(--garnet-100); color:var(--garnet-700)"></p>
+
+          <button id="signup-submit" type="submit" class="btn-primary w-full">Daftar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- =========================================================
+     VIEW: MENUNGGU PERSETUJUAN / DITOLAK
+========================================================= -->
+<div id="view-pending" class="view min-h-screen flex items-center justify-center px-6" style="background:var(--paper)">
+  <div class="card p-8 max-w-sm w-full text-center">
+    <div id="pending-icon-wrap" class="h-14 w-14 rounded-full flex items-center justify-center mx-auto mb-4" style="background:var(--teal-50)">
+      <svg class="h-6 w-6" style="color:var(--teal-700)" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+    </div>
+    <h2 id="pending-title" class="font-display font-bold text-lg text-ink">Menunggu Persetujuan</h2>
+    <p id="pending-message" class="text-sm text-ink/55 mt-2 leading-relaxed">
+      Pendaftaran Anda sudah diterima. Admin klub akan meninjau dan mengaktifkan akun Anda.
+    </p>
+    <button id="pending-logout-btn" class="btn-ghost w-full mt-6">Keluar</button>
+  </div>
+</div>
+
+<!-- =========================================================
+     VIEW: APP SHELL
+========================================================= -->
+<div id="view-app" class="view min-h-screen">
+
+  <header class="fixed top-0 inset-x-0 h-16 bg-[var(--card)] border-b border-[var(--paper-line)] z-30 flex items-center justify-between px-4 sm:px-6">
+    <div class="flex items-center gap-3">
+      <button id="sidebar-toggle" class="lg:hidden -ml-1 p-2 rounded-[8px] text-[var(--teal-900)] hover:bg-[var(--teal-50)]" aria-label="Buka menu">
+        <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <img src="assets/logo-horizontal-dark.png" alt="Aquatic Legawa" class="h-6 sm:h-7 w-auto">
+    </div>
+
+    <div class="flex items-center gap-3 sm:gap-4">
+      <div class="flex items-center gap-2.5 pl-3 border-l border-[var(--paper-line)]">
+        <img src="assets/logo-icon.png" alt="Avatar profil" class="h-8 w-8 rounded-full ring-2 ring-[var(--teal-100)] object-cover">
+        <div class="hidden sm:block leading-tight">
+          <p id="topbar-name" class="text-sm font-semibold font-display text-ink">—</p>
+          <p id="topbar-role" class="text-[11px] text-ink/50">—</p>
+        </div>
+      </div>
+      <button id="logout-btn" class="p-2 rounded-[8px] text-ink/45 hover:bg-[var(--garnet-100)] hover:text-[var(--garnet-700)] transition" aria-label="Keluar">
+        <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 5v1a3 3 0 01-3 3H6a3 3 0 01-3-3V6a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <aside id="sidebar" class="fixed z-40 top-0 left-0 h-full w-64 pt-16 -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-out flex flex-col" style="background:var(--teal-900)">
+    <button id="sidebar-close" class="lg:hidden absolute top-4 right-4 p-1.5 rounded-[8px] hover:bg-white/10" aria-label="Tutup menu">
+      <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+    </button>
+    <nav id="nav-list" class="flex-1 overflow-y-auto px-3 py-6 space-y-1"></nav>
+    <div class="p-4 mx-3 mb-4 rounded-[10px] bg-white/5 text-[11px] text-white/60 leading-relaxed">
+      <p class="font-display font-bold text-white text-xs mb-1 uppercase tracking-wide">Musim 2026</p>
+      Renang · Polo Air · Loncat Indah · Renang Indah
+    </div>
+  </aside>
+  <div id="sidebar-backdrop" class="fixed inset-0 bg-black/40 z-30 hidden lg:hidden"></div>
+
+  <main class="lg:pl-64 pt-16 pb-20 lg:pb-10 min-h-screen">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8" id="page-content"></div>
+  </main>
+
+  <nav id="bottom-nav" class="lg:hidden fixed bottom-0 inset-x-0 h-16 z-30 flex items-stretch" style="background:var(--card); border-top:1px solid var(--paper-line)"></nav>
+</div>
+
+<!-- =========================================================
+     MODAL: Absen Kehadiran (kamera sungguhan)
+========================================================= -->
+<div id="modal-absen" class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-backdrop">
+  <div class="modal-panel w-full max-w-sm overflow-hidden">
+    <div class="flex items-center justify-between px-5 py-4 border-b border-[var(--paper-line)]">
+      <h3 class="font-display font-bold text-ink">Absen Kehadiran</h3>
+      <button data-close-modal="modal-absen" class="p-1 rounded-[8px] text-ink/40 hover:bg-[var(--teal-50)]" aria-label="Tutup"><svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
+    </div>
+    <div class="p-5">
+      <div class="relative aspect-[4/3] rounded-[10px] overflow-hidden flex items-center justify-center" style="background:var(--ink)">
+        <video id="camera-video" autoplay playsinline muted class="absolute inset-0 w-full h-full object-cover" style="transform:scaleX(-1)"></video>
+        <div id="camera-placeholder" class="relative flex flex-col items-center text-white/60 px-6 text-center cam-texture">
+          <svg class="h-9 w-9 mb-2" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.55-2.28A1 1 0 0121 8.62v6.76a1 1 0 01-1.45.9L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+          <span id="camera-placeholder-text" class="text-xs font-medium">Membuka kamera…</span>
+        </div>
+        <span class="absolute top-3 left-3 flex items-center gap-1.5 text-[11px] font-semibold text-white px-2 py-0.5 rounded-full" style="background:rgba(147,27,46,.9)">
+          <span class="h-1.5 w-1.5 rounded-full bg-white animate-pulse"></span> LIVE
+        </span>
+      </div>
+      <div id="absen-result" class="hidden mt-4 rounded-[10px] px-4 py-3 flex items-start gap-2.5" style="background:var(--teal-50); border:1px solid rgba(16,97,102,.2)">
+        <svg class="h-5 w-5 shrink-0 mt-0.5" style="color:var(--teal-700)" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <div>
+          <p class="text-sm font-semibold" style="color:var(--teal-900)">Absensi berhasil dicatat</p>
+          <p id="absen-timestamp" class="text-xs mt-0.5" style="color:var(--teal-800)">—</p>
+        </div>
+      </div>
+      <p class="text-xs text-ink/45 mt-3 leading-relaxed">Foto akan disimpan sebagai bukti kehadiran ke database klub.</p>
+    </div>
+    <div class="px-5 pb-5 flex gap-3">
+      <button data-close-modal="modal-absen" class="btn-ghost flex-1">Batal</button>
+      <button id="capture-btn" class="btn-primary flex-1">
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.55-2.28A1 1 0 0121 8.62v6.76a1 1 0 01-1.45.9L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+        Ambil &amp; Catat
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- =========================================================
+     MODAL: Import Data Excel
+========================================================= -->
+<div id="modal-import" class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-backdrop">
+  <div class="modal-panel w-full max-w-md overflow-hidden">
+    <div class="flex items-center justify-between px-5 py-4 border-b border-[var(--paper-line)]">
+      <h3 class="font-display font-bold text-ink">Import Data Excel</h3>
+      <button data-close-modal="modal-import" class="p-1 rounded-[8px] text-ink/40 hover:bg-[var(--teal-50)]" aria-label="Tutup"><svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
+    </div>
+    <div class="p-5">
+      <label id="dropzone" class="block cursor-pointer rounded-[10px] px-4 py-8 text-center transition" style="border:2px dashed rgba(16,97,102,.3); background:var(--teal-50)">
+        <input type="file" id="file-input" accept=".xlsx,.xls,.csv" class="hidden">
+        <svg class="h-8 w-8 mx-auto mb-2" style="color:var(--teal-700)" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.9A5.5 5.5 0 0116.9 6.1 4.5 4.5 0 0117.5 15H17M12 12v9m0-9l-3 3m3-3l3 3"/></svg>
+        <p class="text-sm font-semibold text-ink">Seret file ke sini, atau <span style="color:var(--teal-700)" class="underline">pilih file</span></p>
+        <p id="dropzone-filename" class="text-xs text-ink/45 mt-1">Format .xlsx, .xls, atau .csv — kolom: Nama, Email, Role, Cabang</p>
+      </label>
+
+      <div id="import-progress-wrap" class="hidden mt-4">
+        <div class="flex justify-between text-xs text-ink/60 mb-1.5">
+          <span id="import-status-text">Mengunggah…</span>
+          <span id="import-percent">0%</span>
+        </div>
+        <div class="h-2 rounded-full overflow-hidden" style="background:var(--teal-100)">
+          <div id="import-bar" class="h-full rounded-full transition-all duration-150" style="width:0%; background:var(--teal-700)"></div>
+        </div>
+      </div>
+
+      <div id="import-success" class="hidden mt-4 rounded-[10px] px-4 py-3 flex items-start gap-2.5" style="background:var(--teal-50); border:1px solid rgba(16,97,102,.2)">
+        <svg class="h-5 w-5 shrink-0 mt-0.5" style="color:var(--teal-700)" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <div>
+          <p id="import-success-text" class="text-sm font-semibold" style="color:var(--teal-900)">Berhasil diimpor</p>
+          <p class="text-xs mt-0.5" style="color:var(--teal-800)">Data anggota baru telah ditambahkan ke tabel.</p>
+        </div>
+      </div>
+    </div>
+    <div class="px-5 pb-5 flex gap-3">
+      <button data-close-modal="modal-import" class="btn-ghost flex-1">Tutup</button>
+      <button id="import-start-btn" disabled class="btn-primary flex-1">Mulai Import</button>
+    </div>
+  </div>
+</div>
+
+<!-- =========================================================
+     MODAL: Guide Book Viewer
+========================================================= -->
+<div id="modal-guidebook" class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-backdrop">
+  <div class="modal-panel w-full max-w-lg overflow-hidden">
+    <div class="flex items-center justify-between px-5 py-4 border-b border-[var(--paper-line)]">
+      <div>
+        <p class="text-[11px] uppercase tracking-wide font-semibold" style="color:var(--garnet-600)">Guide Book</p>
+        <h3 id="guidebook-title" class="font-display font-bold text-ink">—</h3>
+      </div>
+      <button data-close-modal="modal-guidebook" class="p-1 rounded-[8px] text-ink/40 hover:bg-[var(--teal-50)]" aria-label="Tutup"><svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
+    </div>
+    <div class="p-5">
+      <div class="aspect-[4/5] sm:aspect-[3/4] rounded-[10px] flex flex-col items-center justify-center px-8 text-center overflow-y-auto" style="background:var(--teal-50); border:1px solid var(--paper-line)">
+        <svg class="h-10 w-10 mb-3 shrink-0" style="color:var(--teal-700)" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.25C10.5 5 8.5 4.5 6 4.5v13c2.5 0 4.5.5 6 1.75m0-13c1.5-1.25 3.5-1.75 6-1.75v13c-2.5 0-4.5.5-6 1.75m0-13v13"/></svg>
+        <p class="font-display font-bold text-ink" id="guidebook-page-title">Bagian 1</p>
+        <p class="text-sm text-ink/50 mt-2 leading-relaxed" id="guidebook-page-body">—</p>
+        <p class="text-xs text-ink/35 mt-6" id="guidebook-page-num">Halaman 1</p>
+      </div>
+    </div>
+    <div class="px-5 pb-5 flex items-center justify-between gap-3">
+      <button id="guidebook-prev" class="btn-ghost">← Sebelumnya</button>
+      <span class="text-xs text-ink/40">Mode baca — tanpa unduh</span>
+      <button id="guidebook-next" class="btn-primary">Berikutnya →</button>
+    </div>
+  </div>
+</div>
+
+<!-- =========================================================
+     MODAL: Video Player (HTML5 video sungguhan)
+========================================================= -->
+<div id="modal-video" class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-backdrop">
+  <div class="rounded-[14px] overflow-hidden w-full max-w-lg" style="background:var(--ink)">
+    <div class="flex items-center justify-between px-5 py-4 border-b border-white/10">
+      <div>
+        <p class="text-[11px] uppercase tracking-wide font-semibold" style="color:var(--garnet-500)">Video Edukasi · Streaming</p>
+        <h3 id="video-title" class="font-display font-bold text-white">—</h3>
+      </div>
+      <button data-close-modal="modal-video" class="p-1 rounded-[8px] text-white/50 hover:bg-white/10" aria-label="Tutup"><svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
+    </div>
+    <div class="relative aspect-video bg-black">
+      <video id="video-player" controls controlsList="nodownload noremoteplayback" disablePictureInPicture playsinline class="w-full h-full"></video>
+    </div>
+    <div class="px-5 py-4">
+      <p class="text-xs text-white/40 leading-relaxed">Materi ini diputar langsung dari penyimpanan klub. Tombol unduh disembunyikan pada browser yang mendukungnya, sesuai kebijakan konten edukasi.</p>
+    </div>
+  </div>
+</div>
+
+<div id="toast-container" class="fixed bottom-20 lg:bottom-6 right-4 sm:right-6 z-[60] flex flex-col gap-2 items-end"></div>
+
+<script src="js/supabase-client.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/app.js"></script>
+<script>
+  document.getElementById('login-lane-rope').innerHTML = laneRope();
+</script>
+</body>
+</html>
