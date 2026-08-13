@@ -67,6 +67,15 @@ returns boolean as $$
   );
 $$ language sql security definer stable;
 
+-- Sama seperti is_admin(), untuk peran Pelatih (dipakai supaya Pelatih juga
+-- bisa mengelola Agenda, bukan hanya admin).
+create or replace function public.is_pelatih()
+returns boolean as $$
+  select exists (
+    select 1 from public.profiles where id = auth.uid() and role = 'pelatih'
+  );
+$$ language sql security definer stable;
+
 -- ---------------------------------------------------------
 -- MEMBERS: daftar "Data Anggota / All Categories" (hasil import Excel / input manual admin)
 -- Terpisah dari akun login — admin bisa mendata orang dulu, akun login dibuat menyusul.
@@ -88,6 +97,7 @@ create table if not exists attendance (
   user_id uuid references profiles(id) on delete cascade,
   photo_url text,
   status text default 'Hadir',
+  note text,
   created_at timestamptz default now()
 );
 
@@ -122,6 +132,10 @@ create table if not exists events (
   title text not null,
   event_at timestamptz not null,
   place text,
+  description text,
+  category text,
+  poster_url text,
+  created_by uuid references profiles(id) on delete set null,
   created_at timestamptz default now()
 );
 
@@ -183,6 +197,7 @@ create policy "user kelola todo sendiri" on todos for all using (auth.uid() = us
 -- EVENTS
 create policy "user login lihat event" on events for select using (auth.role() = 'authenticated');
 create policy "admin kelola event" on events for all using (public.is_admin());
+create policy "pelatih kelola event" on events for all using (public.is_pelatih()) with check (public.is_pelatih());
 
 -- GUIDE BOOKS
 create policy "user login lihat guide book" on guide_books for select using (auth.role() = 'authenticated');
@@ -219,6 +234,20 @@ create policy "user ganti avatar sendiri" on storage.objects
   using (bucket_id = 'avatars' and (storage.foldername(name))[1] = auth.uid()::text);
 create policy "publik lihat avatar" on storage.objects
   for select to public using (bucket_id = 'avatars');
+
+-- Bucket poster agenda/pertandingan — admin & pelatih boleh upload, semua boleh lihat.
+insert into storage.buckets (id, name, public)
+values ('event-posters', 'event-posters', true)
+on conflict (id) do nothing;
+
+create policy "admin pelatih upload poster event" on storage.objects
+  for insert to authenticated
+  with check (bucket_id = 'event-posters' and (public.is_admin() or public.is_pelatih()));
+create policy "admin pelatih ganti poster event" on storage.objects
+  for update to authenticated
+  using (bucket_id = 'event-posters' and (public.is_admin() or public.is_pelatih()));
+create policy "publik lihat poster event" on storage.objects
+  for select to public using (bucket_id = 'event-posters');
 
 -- =========================================================
 -- DATA AWAL (opsional) — supaya aplikasi tidak kosong melompong saat pertama kali dibuka.

@@ -378,6 +378,131 @@
   </div>
 </div>
 
+<!-- =========================================================
+     MODAL: Ajukan Izin Tidak Masuk
+========================================================= -->
+<div id="modal-izin" class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-backdrop">
+  <div class="modal-panel w-full max-w-sm overflow-hidden">
+    <div class="flex items-center justify-between px-5 py-4 border-b border-[var(--paper-line)]">
+      <h3 class="font-display font-bold text-ink">Ajukan Izin Tidak Masuk</h3>
+      <button data-close-modal="modal-izin" class="p-1 rounded-[8px] text-ink/40 hover:bg-[var(--teal-50)]" aria-label="Tutup"><svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
+    </div>
+    <form id="izin-form" class="p-5 space-y-4">
+      <div>
+        <label class="block text-xs font-semibold uppercase tracking-wide text-ink/50 mb-1.5 font-nav">Alasan Tidak Masuk</label>
+        <textarea id="izin-reason" name="reason" rows="4" required placeholder="mis. Sakit demam, ada acara keluarga, dll." class="field"></textarea>
+      </div>
+      <p class="text-xs text-ink/45 leading-relaxed">Pengajuan izin akan tercatat di riwayat absensi dan admin akan diberi tahu.</p>
+      <div class="flex gap-3">
+        <button type="button" data-close-modal="modal-izin" class="btn-ghost flex-1">Batal</button>
+        <button type="submit" id="izin-submit" class="btn-primary flex-1">Kirim Izin</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- =========================================================
+     MODAL: Tambah / Edit Agenda (Admin & Pelatih)
+========================================================= -->
+<div id="modal-event-form" class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-backdrop overflow-y-auto py-8">
+  <div class="modal-panel w-full max-w-lg overflow-hidden my-auto">
+    <div class="flex items-center justify-between px-5 py-4 border-b border-[var(--paper-line)]">
+      <h3 id="event-form-title" class="font-display font-bold text-ink">Tambah Agenda</h3>
+      <button data-close-modal="modal-event-form" class="p-1 rounded-[8px] text-ink/40 hover:bg-[var(--teal-50)]" aria-label="Tutup"><svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
+    </div>
+    <form id="event-form" class="p-5 space-y-4 max-h-[70vh] overflow-y-auto">
+      <input type="hidden" name="id" id="event-form-id">
+      <div>
+        <label class="block text-xs font-semibold uppercase tracking-wide text-ink/50 mb-1.5 font-nav">Judul Pertandingan / Acara</label>
+        <input name="title" required placeholder="mis. Kejuaraan Renang Antar Klub Jakarta" class="field">
+      </div>
+      <div class="grid sm:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-semibold uppercase tracking-wide text-ink/50 mb-1.5 font-nav">Cabang Olahraga</label>
+          <select name="category" class="field">
+            <option value="">Umum / Semua Cabang</option>
+            <option value="Renang">Renang</option>
+            <option value="Polo Air">Polo Air</option>
+            <option value="Loncat Indah">Loncat Indah</option>
+            <option value="Renang Indah">Renang Indah</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold uppercase tracking-wide text-ink/50 mb-1.5 font-nav">Lokasi</label>
+          <input name="place" placeholder="mis. GBK Aquatic Center" class="field">
+        </div>
+      </div>
+      <div class="grid sm:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-semibold uppercase tracking-wide text-ink/50 mb-1.5 font-nav">Tanggal</label>
+          <input name="event_date" type="date" required class="field">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold uppercase tracking-wide text-ink/50 mb-1.5 font-nav">Jam</label>
+          <input name="event_time" type="time" required class="field">
+        </div>
+      </div>
+      <div>
+        <label class="block text-xs font-semibold uppercase tracking-wide text-ink/50 mb-1.5 font-nav">Deskripsi</label>
+        <textarea name="description" rows="3" placeholder="Detail acara, kategori umur, kontak, dsb." class="field"></textarea>
+      </div>
+      <div>
+        <label class="block text-xs font-semibold uppercase tracking-wide text-ink/50 mb-1.5 font-nav">Poster (opsional)</label>
+        <div id="event-poster-preview" class="rounded-[10px] overflow-hidden mb-2" style="border:1px solid var(--paper-line)"></div>
+        <label class="btn-ghost w-full text-center block cursor-pointer">
+          <input type="file" id="event-poster-input" accept="image/*" class="hidden">
+          Pilih Gambar Poster
+        </label>
+      </div>
+      <p id="event-form-error" class="hidden text-xs rounded-[8px] px-3 py-2" style="background:var(--garnet-100); color:var(--garnet-700)"></p>
+    </form>
+    <div class="px-5 pb-5 pt-2 flex items-center justify-between gap-3 border-t border-[var(--paper-line)]">
+      <button id="event-delete-btn" type="button" class="hidden text-xs font-semibold" style="color:var(--garnet-600)">Hapus Agenda</button>
+      <div class="flex gap-3 ml-auto">
+        <button type="button" data-close-modal="modal-event-form" class="btn-ghost">Batal</button>
+        <button type="submit" form="event-form" id="event-form-submit" class="btn-primary">Simpan Agenda</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- =========================================================
+     MODAL: Detail Agenda (semua peran bisa lihat)
+========================================================= -->
+<div id="modal-event-detail" class="fixed inset-0 z-50 hidden items-center justify-center p-4 modal-backdrop overflow-y-auto py-8">
+  <div class="modal-panel w-full max-w-lg overflow-hidden my-auto">
+    <div id="event-detail-poster" class="hidden aspect-[4/3] sm:aspect-video overflow-hidden" style="background:var(--teal-900)">
+      <img id="event-detail-poster-img" class="w-full h-full object-cover" alt="Poster agenda">
+    </div>
+    <div class="flex items-start justify-between px-5 py-4 border-b border-[var(--paper-line)] gap-3">
+      <div>
+        <p id="event-detail-category" class="eyebrow mb-1"></p>
+        <h3 id="event-detail-title" class="font-display font-bold text-lg text-ink">—</h3>
+      </div>
+      <button data-close-modal="modal-event-detail" class="p-1 rounded-[8px] text-ink/40 hover:bg-[var(--teal-50)] shrink-0" aria-label="Tutup"><svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></button>
+    </div>
+    <div class="p-5 space-y-4">
+      <div class="grid grid-cols-2 gap-3">
+        <div class="card-flat p-3">
+          <p class="text-[10px] font-bold uppercase tracking-wide text-ink/40 font-nav">Tanggal &amp; Jam</p>
+          <p id="event-detail-datetime" class="text-sm font-semibold text-ink mt-1">—</p>
+        </div>
+        <div class="card-flat p-3">
+          <p class="text-[10px] font-bold uppercase tracking-wide text-ink/40 font-nav">Lokasi</p>
+          <p id="event-detail-place" class="text-sm font-semibold text-ink mt-1">—</p>
+        </div>
+      </div>
+      <div>
+        <p class="text-[10px] font-bold uppercase tracking-wide text-ink/40 font-nav mb-1.5">Deskripsi</p>
+        <p id="event-detail-description" class="text-sm text-ink/70 leading-relaxed">—</p>
+      </div>
+    </div>
+    <div id="event-detail-actions" class="hidden px-5 pb-5 flex gap-3">
+      <button id="event-detail-edit-btn" class="btn-ghost flex-1">Edit Agenda</button>
+    </div>
+  </div>
+</div>
+
 <div id="toast-container" class="fixed bottom-20 lg:bottom-6 right-4 sm:right-6 z-[60] flex flex-col gap-2 items-end"></div>
 
 <script src="js/supabase-client.js"></script>

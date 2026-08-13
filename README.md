@@ -1,3 +1,36 @@
+## Catatan pembaruan — Izin, Agenda, Data Absensi, Data Anggota per kategori
+
+Ini pembaruan besar. Kalau project Supabase Anda sudah pernah dipakai, jalankan
+migrasi ini **sekali saja** (SQL Editor → New query → tempel isi file → Run):
+```
+sql/migration_izin_agenda.sql
+```
+(Kalau ini instalasi baru dari nol, cukup `sql/setup.sql` seperti biasa — sudah termasuk semuanya.)
+
+Yang berubah di aplikasi:
+- **Sistem Invois**: status (Pending/Lunas/Terlambat) sekarang bisa diubah
+  langsung lewat dropdown di tabel, tanpa perlu ke Supabase.
+- **Data Anggota**: sekarang dipisah 2 tab (Pelatih / Atlet) + filter cabang
+  olahraga. Anggota yang mendaftar sendiri lewat form Daftar & sudah
+  disetujui admin akan otomatis muncul di sini (sebelumnya hanya menampilkan
+  data import Excel/manual).
+- **Menu baru "Data Absensi"** (khusus admin): rekap siapa saja yang sudah
+  absen — dipisah tab Pelatih/Atlet, ada foto bukti kehadiran, alasan izin
+  (kalau mengajukan izin), dan filter cabang olahraga.
+- **Izin Tidak Masuk**: Pelatih/Atlet sekarang punya tombol "Izin Tidak
+  Masuk" di halaman Absensi, isi alasan, tanpa perlu kamera.
+- **Agenda Terdekat**: Admin & Pelatih bisa menambah/mengedit agenda
+  (judul, cabang, lokasi, tanggal, jam, deskripsi, poster gambar). Atlet
+  hanya bisa melihat & membuka detail — tidak ada tombol tambah/edit untuk
+  Atlet. Semua orang bisa klik agenda untuk lihat detail lengkapnya.
+- **Notifikasi WhatsApp ke admin** saat ada yang mengajukan izin — ini
+  **opsional**, harus diaktifkan dulu. Buka `js/supabase-client.js`, ikuti
+  instruksi di komentar `WA_ADMIN_PHONE` / `WA_APIKEY` (pakai layanan gratis
+  CallMeBot, tidak perlu WhatsApp Business API). Kalau tidak diisi, fitur ini
+  otomatis dilewati tanpa error.
+
+---
+
 ## Catatan pembaruan (baca ini dulu kalau sebelumnya sudah pernah deploy versi lama)
 
 Versi ini memperbaiki **bug absensi gagal tersimpan** ("new row violates row-level
