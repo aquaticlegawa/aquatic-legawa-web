@@ -151,12 +151,23 @@ setAuthTab('login');
 
 /* ---- Form Daftar (Pelatih/Atlet) ---- */
 let signupRole = null;
+let signupAvatarFile = null;
 document.querySelectorAll('[data-signup-role]').forEach(btn => {
   btn.addEventListener('click', () => {
     signupRole = btn.dataset.signupRole;
     document.querySelectorAll('[data-signup-role]').forEach(b => b.classList.remove('role-btn-active'));
     btn.classList.add('role-btn-active');
   });
+});
+
+document.getElementById('signup-avatar-input').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  signupAvatarFile = file;
+  const preview = document.getElementById('signup-avatar-preview');
+  const reader = new FileReader();
+  reader.onload = () => { preview.innerHTML = `<img src="${reader.result}" class="h-full w-full object-cover" alt="Pratinjau foto profil">`; };
+  reader.readAsDataURL(file);
 });
 
 document.getElementById('signup-form').addEventListener('submit', async (e) => {
@@ -174,13 +185,21 @@ document.getElementById('signup-form').addEventListener('submit', async (e) => {
   const fullName = document.getElementById('signup-name').value.trim();
   const email = document.getElementById('signup-email').value.trim();
   const password = document.getElementById('signup-password').value;
+  const ttl = document.getElementById('signup-ttl').value.trim();
+  const gender = document.getElementById('signup-gender').value;
+  const phone = document.getElementById('signup-phone').value.trim();
+  const category = document.getElementById('signup-category').value;
+  const address = document.getElementById('signup-address').value.trim();
 
   submitBtn.disabled = true;
   submitBtn.textContent = 'Mendaftarkan…';
   try {
-    await authSignUp({ fullName, email, password, role: signupRole });
+    const signUpData = await authSignUp({ fullName, email, password, role: signupRole, ttl, gender, phone, category, address });
     const profile = await getCurrentProfile();
     if (profile) {
+      if (signupAvatarFile) {
+        try { await uploadAvatar(profile.id, signupAvatarFile); } catch (avErr) { console.warn('Gagal unggah foto profil:', avErr.message); }
+      }
       routeAfterAuth(profile);
     } else {
       showToast('Pendaftaran terkirim. Silakan cek email untuk konfirmasi, lalu masuk.');
@@ -202,8 +221,14 @@ function enterApp(profile) {
   showView('view-app');
   document.getElementById('topbar-name').textContent = profile.full_name || profile.email;
   document.getElementById('topbar-role').textContent = ROLE_LABEL[profile.role] || profile.role;
+  updateTopbarAvatar(profile.avatar_url);
   buildNav(profile.role);
   navigateTo(NAV_CONFIG[profile.role][0].key);
+}
+
+function updateTopbarAvatar(url) {
+  const img = document.getElementById('topbar-avatar');
+  if (img) img.src = url || 'assets/logo-icon.png';
 }
 
 document.getElementById('logout-btn').addEventListener('click', async () => {
@@ -557,32 +582,72 @@ async function pageBeranda() {
   `;
 }
 
-/* ---------------- PELATIH / ATLET: Profil (read-only) ---------------- */
+/* ---------------- PELATIH / ATLET: Profil (bisa diedit sendiri) ---------------- */
 async function pageProfil() {
   const p = state.profile;
-  const field = (label, value) => `
-    <div><label class="block text-xs font-semibold uppercase tracking-wide text-ink/45 mb-1.5 font-nav">${label}</label>
-    <input type="text" value="${esc(value || '—')}" disabled class="field"></div>`;
+  const avatarImg = p.avatar_url
+    ? `<img src="${esc(p.avatar_url)}" class="h-16 w-16 rounded-full ring-4 ring-[var(--teal-50)] object-cover" alt="Foto profil">`
+    : `<div class="h-16 w-16 rounded-full ring-4 ring-[var(--teal-50)] flex items-center justify-center" style="background:var(--teal-50)"><svg class="h-7 w-7" style="color:var(--teal-700)" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 12a4 4 0 100-8 4 4 0 000 8zm-7 8a7 7 0 0114 0"/></svg></div>`;
   return `
-    ${pageHeader(ROLE_LABEL[p.role], 'Profil Saya', 'Data profil bersifat baca-saja. Hubungi admin untuk perubahan data.')}
-    <div class="card p-5 sm:p-7">
+    ${pageHeader(ROLE_LABEL[p.role], 'Profil Saya', 'Ubah data Anda sendiri kapan saja — perubahan tersimpan langsung.')}
+    <div class="card p-5 sm:p-7 max-w-2xl">
       <div class="flex items-center gap-4 mb-7">
-        <img src="assets/logo-icon.png" class="h-16 w-16 rounded-full ring-4 ring-[var(--teal-50)]" alt="Avatar profil">
+        <div id="profil-avatar-wrap" class="relative">
+          ${avatarImg}
+          <label class="absolute -bottom-1 -right-1 h-7 w-7 rounded-full flex items-center justify-center cursor-pointer" style="background:var(--teal-800); border:2px solid var(--card)">
+            <input type="file" id="profil-avatar-input" accept="image/*" class="hidden">
+            <svg class="h-3.5 w-3.5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.55-2.28A1 1 0 0121 8.62v6.76a1 1 0 01-1.45.9L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+          </label>
+        </div>
         <div>
           <p class="font-display font-bold text-lg text-ink">${esc(p.full_name || p.email)}</p>
           <p class="text-sm text-ink/50">${esc(p.category || ROLE_LABEL[p.role])}</p>
         </div>
       </div>
-      <div class="grid sm:grid-cols-2 gap-x-5 gap-y-5">
-        ${field('Nama Lengkap', p.full_name)}
-        ${field('Email', p.email)}
-        ${field('Tempat, Tanggal Lahir', p.ttl)}
-        ${field('Jenis Kelamin', p.gender)}
-        ${field('No. HP', p.phone)}
-        ${field('Kategori / Cabang', p.category)}
-        <div class="sm:col-span-2">${field('Alamat', p.address)}</div>
-      </div>
-      <p class="text-xs text-ink/35 mt-5">Kolom kosong (—) berarti data belum diisikan admin di Table Editor Supabase.</p>
+      <form id="profil-edit-form" class="grid sm:grid-cols-2 gap-x-5 gap-y-5">
+        <div>
+          <label class="block text-xs font-semibold uppercase tracking-wide text-ink/45 mb-1.5 font-nav">Nama Lengkap</label>
+          <input name="full_name" type="text" value="${esc(p.full_name)}" class="field">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold uppercase tracking-wide text-ink/45 mb-1.5 font-nav">Email</label>
+          <input type="text" value="${esc(p.email)}" disabled class="field">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold uppercase tracking-wide text-ink/45 mb-1.5 font-nav">Tempat, Tanggal Lahir</label>
+          <input name="ttl" type="text" value="${esc(p.ttl)}" placeholder="mis. Jakarta, 12 Mei 2010" class="field">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold uppercase tracking-wide text-ink/45 mb-1.5 font-nav">Jenis Kelamin</label>
+          <select name="gender" class="field">
+            <option value="" ${!p.gender ? 'selected' : ''}>Pilih…</option>
+            <option value="Laki-laki" ${p.gender==='Laki-laki'?'selected':''}>Laki-laki</option>
+            <option value="Perempuan" ${p.gender==='Perempuan'?'selected':''}>Perempuan</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold uppercase tracking-wide text-ink/45 mb-1.5 font-nav">No. HP</label>
+          <input name="phone" type="tel" value="${esc(p.phone)}" placeholder="08xxxxxxxxxx" class="field">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold uppercase tracking-wide text-ink/45 mb-1.5 font-nav">Cabang Olahraga</label>
+          <select name="category" class="field">
+            <option value="" ${!p.category?'selected':''}>Pilih…</option>
+            <option value="Renang" ${p.category==='Renang'?'selected':''}>Renang</option>
+            <option value="Polo Air" ${p.category==='Polo Air'?'selected':''}>Polo Air</option>
+            <option value="Loncat Indah" ${p.category==='Loncat Indah'?'selected':''}>Loncat Indah</option>
+            <option value="Renang Indah" ${p.category==='Renang Indah'?'selected':''}>Renang Indah</option>
+          </select>
+        </div>
+        <div class="sm:col-span-2">
+          <label class="block text-xs font-semibold uppercase tracking-wide text-ink/45 mb-1.5 font-nav">Alamat</label>
+          <textarea name="address" rows="2" class="field">${esc(p.address || '')}</textarea>
+        </div>
+        <div class="sm:col-span-2 flex items-center gap-3">
+          <button type="submit" id="profil-save-btn" class="btn-primary">Simpan Perubahan</button>
+          <span id="profil-save-status" class="text-xs text-ink/45"></span>
+        </div>
+      </form>
     </div>
   `;
 }
@@ -746,6 +811,51 @@ function bindPageEvents(key) {
     if (error) { showToast('Gagal memperbarui tugas.'); return; }
     renderPage('beranda');
   }));
+
+  /* ---- Profil Saya: simpan perubahan data ---- */
+  const profilForm = document.getElementById('profil-edit-form');
+  if (profilForm) profilForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const fd = new FormData(profilForm);
+    const saveBtn = document.getElementById('profil-save-btn');
+    const statusEl = document.getElementById('profil-save-status');
+    saveBtn.disabled = true;
+    saveBtn.textContent = 'Menyimpan…';
+    const updates = {
+      full_name: fd.get('full_name').trim() || null,
+      ttl: fd.get('ttl').trim() || null,
+      gender: fd.get('gender') || null,
+      phone: fd.get('phone').trim() || null,
+      category: fd.get('category') || null,
+      address: fd.get('address').trim() || null,
+    };
+    const { error } = await sb.from('profiles').update(updates).eq('id', state.profile.id);
+    saveBtn.disabled = false;
+    saveBtn.textContent = 'Simpan Perubahan';
+    if (error) { showToast('Gagal menyimpan: ' + error.message); return; }
+    Object.assign(state.profile, updates);
+    document.getElementById('topbar-name').textContent = state.profile.full_name || state.profile.email;
+    statusEl.textContent = 'Tersimpan ✓';
+    showToast('Profil berhasil diperbarui.');
+    setTimeout(() => { if (statusEl) statusEl.textContent = ''; }, 2500);
+  });
+
+  /* ---- Profil Saya: ganti foto profil ---- */
+  const avatarInput = document.getElementById('profil-avatar-input');
+  if (avatarInput) avatarInput.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    try {
+      showToast('Mengunggah foto…');
+      const url = await uploadAvatar(state.profile.id, file);
+      state.profile.avatar_url = url;
+      renderPage('profil');
+      updateTopbarAvatar(url);
+      showToast('Foto profil diperbarui.');
+    } catch (err) {
+      showToast('Gagal mengunggah foto: ' + err.message);
+    }
+  });
 }
 
 /* =========================================================

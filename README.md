@@ -1,3 +1,34 @@
+## Catatan pembaruan (baca ini dulu kalau sebelumnya sudah pernah deploy versi lama)
+
+Versi ini memperbaiki **bug absensi gagal tersimpan** ("new row violates row-level
+security policy") dan menambah **pendaftaran + edit profil lengkap**. Kalau
+project Supabase Anda sudah pernah dipakai sebelumnya (bukan instalasi baru
+dari nol), jalankan migrasi ini **sekali saja**:
+
+1. Buka **SQL Editor** di Supabase → **New query**.
+2. Salin seluruh isi file `sql/migration_profil_dan_storage.sql`, tempel, **Run**.
+
+Migrasi ini akan:
+- Menambahkan izin upload foto ke bucket `attendance-photos` (ini yang
+  menyebabkan error "Gagal mencatat absensi" sebelumnya — bucket-nya sudah
+  "Public" untuk dibaca, tapi belum ada izin untuk ditulis/di-upload).
+- Membuat bucket `avatars` baru (otomatis lewat SQL, tidak perlu klik manual
+  di menu Storage) beserta izinnya, untuk foto profil Pelatih/Atlet.
+- Memperbarui form pendaftaran supaya Tempat/Tanggal Lahir, Jenis Kelamin,
+  No. HP, Cabang Olahraga, dan Alamat langsung tersimpan saat mendaftar
+  (sebelumnya field-field ini kosong dan hanya bisa diisi admin lewat
+  Table Editor).
+
+**Kalau ini instalasi baru dari nol**, cukup jalankan `sql/setup.sql` seperti
+biasa — semua perbaikan di atas sudah termasuk di dalamnya, tidak perlu
+menjalankan file migrasi ini lagi.
+
+Pelatih/Atlet yang **sudah terlanjur terdaftar sebelum migrasi ini** tidak
+akan otomatis terisi datanya — mereka bisa melengkapi sendiri lewat menu
+**Profil Saya** (sekarang bisa diedit sendiri, termasuk ganti foto profil).
+
+---
+
 ## Catatan pembaruan desain (baca ini dulu kalau update sebelumnya pakai versi lama)
 
 Versi ini mengganti dua hal penting dari versi sebelumnya, tanpa mengubah cara
@@ -260,7 +291,7 @@ yang ditandai *(via Supabase)*:
 | Tambah agenda/jadwal | *(via Supabase)* Table Editor → tabel `events` → Insert row |
 | Tambah Guide Book | *(via Supabase)* Table Editor → tabel `guide_books` → Insert row. Pisahkan tiap "halaman" dengan baris kosong ganda di kolom `content`. |
 | Tambah Video Edukasi | *(via Supabase)* Storage → bucket `videos` → Upload file → klik file → Copy URL → Table Editor → tabel `videos` → Insert row, tempel URL di kolom `video_url` |
-| Lihat/ubah data profil pelatih/atlet | *(via Supabase)* Table Editor → tabel `profiles` |
+| Lihat/ubah data profil pelatih/atlet | Pelatih/Atlet mengubah sendiri lewat menu **Profil Saya** di aplikasi. Admin tetap bisa lihat/ubah lewat *(via Supabase)* Table Editor → tabel `profiles` bila perlu |
 
 *(Kalau nanti mau, form "Tambah Agenda/Guide Book/Video" langsung dari aplikasi bisa
 ditambahkan — beri tahu saya, ini pengembangan lanjutan yang cukup singkat.)*

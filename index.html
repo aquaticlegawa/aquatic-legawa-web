@@ -99,7 +99,7 @@
       <!-- ---- FORM DAFTAR (Pelatih/Atlet) ---- -->
       <div id="panel-signup" class="hidden">
         <h2 class="font-display font-bold text-2xl text-ink">Daftar akun baru</h2>
-        <p class="text-sm text-ink/60 mt-1.5 mb-6">Untuk Pelatih &amp; Atlet. Akun akan aktif setelah disetujui admin.</p>
+        <p class="text-sm text-ink/60 mt-1.5 mb-6">Isi data lengkap sekali di sini — tidak perlu edit ulang setelah disetujui admin.</p>
 
         <form id="signup-form" class="space-y-4" novalidate>
           <div>
@@ -115,6 +115,18 @@
               </button>
             </div>
           </div>
+
+          <div class="flex items-center gap-4">
+            <div id="signup-avatar-preview" class="h-16 w-16 rounded-full shrink-0 flex items-center justify-center overflow-hidden" style="background:var(--teal-50); border:1.5px dashed rgba(16,97,102,.35)">
+              <svg class="h-6 w-6" style="color:var(--teal-700)" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v-9a2 2 0 012-2h2.5l1.5-2h6l1.5 2H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><circle cx="12" cy="11.5" r="3.2" stroke="currentColor" stroke-width="1.6" fill="none"/></svg>
+            </div>
+            <label class="flex-1 cursor-pointer">
+              <input type="file" id="signup-avatar-input" accept="image/*" class="hidden">
+              <span class="btn-ghost w-full text-center block">Pilih Foto Profil</span>
+              <p class="text-[11px] text-ink/40 mt-1">Opsional — bisa ditambahkan nanti di menu Profil Saya.</p>
+            </label>
+          </div>
+
           <div>
             <label for="signup-name" class="block text-xs font-semibold uppercase tracking-wide text-ink/50 mb-1.5 font-nav">Nama Lengkap</label>
             <input id="signup-name" type="text" required placeholder="Nama sesuai identitas" class="field">
@@ -126,6 +138,43 @@
           <div>
             <label for="signup-password" class="block text-xs font-semibold uppercase tracking-wide text-ink/50 mb-1.5 font-nav">Buat Kata Sandi</label>
             <input id="signup-password" type="password" required minlength="6" autocomplete="new-password" placeholder="Minimal 6 karakter" class="field">
+          </div>
+
+          <div class="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label for="signup-ttl" class="block text-xs font-semibold uppercase tracking-wide text-ink/50 mb-1.5 font-nav">Tempat, Tanggal Lahir</label>
+              <input id="signup-ttl" type="text" placeholder="mis. Jakarta, 12 Mei 2010" class="field">
+            </div>
+            <div>
+              <label for="signup-gender" class="block text-xs font-semibold uppercase tracking-wide text-ink/50 mb-1.5 font-nav">Jenis Kelamin</label>
+              <select id="signup-gender" class="field">
+                <option value="">Pilih…</option>
+                <option value="Laki-laki">Laki-laki</option>
+                <option value="Perempuan">Perempuan</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label for="signup-phone" class="block text-xs font-semibold uppercase tracking-wide text-ink/50 mb-1.5 font-nav">No. HP</label>
+              <input id="signup-phone" type="tel" placeholder="08xxxxxxxxxx" class="field">
+            </div>
+            <div>
+              <label for="signup-category" class="block text-xs font-semibold uppercase tracking-wide text-ink/50 mb-1.5 font-nav">Cabang Olahraga</label>
+              <select id="signup-category" class="field">
+                <option value="">Pilih…</option>
+                <option value="Renang">Renang</option>
+                <option value="Polo Air">Polo Air</option>
+                <option value="Loncat Indah">Loncat Indah</option>
+                <option value="Renang Indah">Renang Indah</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label for="signup-address" class="block text-xs font-semibold uppercase tracking-wide text-ink/50 mb-1.5 font-nav">Alamat Tinggal</label>
+            <textarea id="signup-address" rows="2" placeholder="Alamat lengkap" class="field"></textarea>
           </div>
 
           <p id="signup-error" class="hidden text-xs rounded-[8px] px-3 py-2" style="background:var(--garnet-100); color:var(--garnet-700)"></p>
@@ -168,7 +217,7 @@
 
     <div class="flex items-center gap-3 sm:gap-4">
       <div class="flex items-center gap-2.5 pl-3 border-l border-[var(--paper-line)]">
-        <img src="assets/logo-icon.png" alt="Avatar profil" class="h-8 w-8 rounded-full ring-2 ring-[var(--teal-100)] object-cover">
+        <img id="topbar-avatar" src="assets/logo-icon.png" alt="Foto profil" class="h-8 w-8 rounded-full ring-2 ring-[var(--teal-100)] object-cover">
         <div class="hidden sm:block leading-tight">
           <p id="topbar-name" class="text-sm font-semibold font-display text-ink">—</p>
           <p id="topbar-role" class="text-[11px] text-ink/50">—</p>

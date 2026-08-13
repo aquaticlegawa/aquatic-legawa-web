@@ -36,13 +36,18 @@ begin
   if requested_role not in ('pelatih','atlet') then
     requested_role := 'atlet';
   end if;
-  insert into public.profiles (id, email, full_name, role, status)
+  insert into public.profiles (id, email, full_name, role, status, ttl, gender, phone, category, address)
   values (
     new.id,
     new.email,
     coalesce(new.raw_user_meta_data->>'full_name', new.email),
     requested_role,
-    'pending'
+    'pending',
+    new.raw_user_meta_data->>'ttl',
+    new.raw_user_meta_data->>'gender',
+    new.raw_user_meta_data->>'phone',
+    new.raw_user_meta_data->>'category',
+    new.raw_user_meta_data->>'address'
   );
   return new;
 end;
@@ -186,6 +191,34 @@ create policy "admin kelola guide book" on guide_books for all using (public.is_
 -- VIDEOS
 create policy "user login lihat video" on videos for select using (auth.role() = 'authenticated');
 create policy "admin kelola video" on videos for all using (public.is_admin());
+
+-- =========================================================
+-- STORAGE: bucket avatars dibuat otomatis di sini (setara klik
+-- "New bucket" di Storage). Bucket attendance-photos & videos TETAP
+-- perlu dibuat manual lewat menu Storage (lihat README Bagian 1.3)
+-- karena kita hanya tahu namanya lewat konvensi, bukan lewat kode ini.
+-- =========================================================
+insert into storage.buckets (id, name, public)
+values ('avatars', 'avatars', true)
+on conflict (id) do nothing;
+
+-- Setiap user hanya boleh upload/ubah foto ke folder bernama UID miliknya
+-- sendiri di dalam bucket attendance-photos / avatars (dicocokkan dengan
+-- cara js/app.js & js/auth.js menamai file: "{user_id}/....jpg").
+create policy "user upload foto absensi sendiri" on storage.objects
+  for insert to authenticated
+  with check (bucket_id = 'attendance-photos' and (storage.foldername(name))[1] = auth.uid()::text);
+create policy "publik lihat foto absensi" on storage.objects
+  for select to public using (bucket_id = 'attendance-photos');
+
+create policy "user upload avatar sendiri" on storage.objects
+  for insert to authenticated
+  with check (bucket_id = 'avatars' and (storage.foldername(name))[1] = auth.uid()::text);
+create policy "user ganti avatar sendiri" on storage.objects
+  for update to authenticated
+  using (bucket_id = 'avatars' and (storage.foldername(name))[1] = auth.uid()::text);
+create policy "publik lihat avatar" on storage.objects
+  for select to public using (bucket_id = 'avatars');
 
 -- =========================================================
 -- DATA AWAL (opsional) — supaya aplikasi tidak kosong melompong saat pertama kali dibuka.
