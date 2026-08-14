@@ -39,7 +39,14 @@ const NAV_CONFIG = {
 };
 
 function laneRope() {
-  return `<div class="lane-rope"></div>`;
+  // Motif bendera backstroke (segitiga kecil bergantian teal/garnet) —
+  // diambil langsung dari perlengkapan kolam renang, bukan hiasan generik.
+  let flags = '';
+  for (let x = 6; x <= 594; x += 24) {
+    const teal = (x / 24) % 2 === 0;
+    flags += `<path d="M${x-4} 0 L${x+4} 0 L${x} 8 Z" class="${teal ? 'flag-teal' : 'flag-garnet'}"/>`;
+  }
+  return `<svg class="lane-rope" viewBox="0 0 600 10" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><line x1="0" y1="0" x2="600" y2="0" class="rope-line"/>${flags}</svg>`;
 }
 
 /* =========================================================

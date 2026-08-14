@@ -25,7 +25,7 @@
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 
-<body>
+<body class="grain">
 
 <!-- =========================================================
      VIEW: LOGIN
@@ -33,6 +33,9 @@
 <div id="view-login" class="view active min-h-screen w-full lg:grid lg:grid-cols-2">
 
   <div class="relative overflow-hidden text-white flex flex-col justify-between px-6 sm:px-10 lg:px-14 py-10 lg:py-14 min-h-[300px] lg:min-h-screen" style="background:var(--teal-900)">
+    <div class="hero-waves"></div>
+    <div class="hero-lanes"></div>
+
     <div class="relative z-10 flex items-center gap-3">
       <img src="assets/logo-icon.png" alt="Lambang Aquatic Legawa" class="h-11 w-11 lg:h-12 lg:w-12">
       <span class="font-nav font-extrabold tracking-wide text-sm lg:text-base uppercase text-white/90">Aquatic Legawa</span>
@@ -226,13 +229,13 @@
     </div>
   </header>
 
-  <aside id="sidebar" class="fixed z-40 top-0 left-0 h-full w-64 pt-16 -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-out flex flex-col" style="background:var(--card); border-right:1px solid var(--paper-line)">
-    <button id="sidebar-close" class="lg:hidden absolute top-4 right-4 p-1.5 rounded-[8px] hover:bg-[var(--teal-50)]" aria-label="Tutup menu">
-      <svg class="h-5 w-5 text-ink/60" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+  <aside id="sidebar" class="fixed z-40 top-0 left-0 h-full w-64 pt-16 -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-out flex flex-col" style="background:var(--teal-900)">
+    <button id="sidebar-close" class="lg:hidden absolute top-4 right-4 p-1.5 rounded-[8px] hover:bg-white/10" aria-label="Tutup menu">
+      <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
     </button>
     <nav id="nav-list" class="flex-1 overflow-y-auto px-3 py-6 space-y-1"></nav>
-    <div class="p-4 mx-3 mb-4 rounded-[10px] text-[11px] text-ink/50 leading-relaxed" style="background:var(--teal-50)">
-      <p class="font-display font-bold text-ink text-xs mb-1 uppercase tracking-wide">Musim 2026</p>
+    <div class="p-4 mx-3 mb-4 rounded-[10px] bg-white/5 text-[11px] text-white/60 leading-relaxed">
+      <p class="font-display font-bold text-white text-xs mb-1 uppercase tracking-wide">Musim 2026</p>
       Renang · Polo Air · Loncat Indah · Renang Indah
     </div>
   </aside>
