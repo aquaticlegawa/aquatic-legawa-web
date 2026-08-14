@@ -1,3 +1,19 @@
+## Catatan pembaruan — Desain gradasi + Rencana aplikasi Flutter (Android/iOS)
+
+Tampilan sekarang: dasar putih dengan gradasi halus warna klub (teal→garnet)
+di background, tombol utama, panel login, dan beberapa kartu kunci — bukan
+lagi flat polos. Tidak perlu migrasi SQL apapun untuk ini, murni visual.
+
+**Kalau Anda berencana membuat aplikasi Android/iOS lewat Flutter**: baca
+`FLUTTER_INTEGRATION.md` di root folder ini — berisi panduan lengkap untuk
+tim developer supaya app Flutter memakai Supabase project yang **sama
+persis** dengan website ini (data, akun, foto semuanya nyambung otomatis,
+tidak perlu sinkronisasi manual). Ada juga folder `FLUTTER_STARTER/` berisi
+kerangka awal project Flutter (tema warna, koneksi Supabase, contoh layar
+login) sebagai titik mulai untuk tim developer.
+
+---
+
 ## Catatan pembaruan — Izin, Agenda, Data Absensi, Data Anggota per kategori
 
 Ini pembaruan besar. Kalau project Supabase Anda sudah pernah dipakai, jalankan

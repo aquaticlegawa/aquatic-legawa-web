@@ -1,9 +1,9 @@
 /* =========================================================
-   Aquatic Legawa — Design System v2
-   Diturunkan langsung dari lambang klub: tetesan air teal,
-   sisik/gelombang, cincin garnet, bendera backstroke, dan
-   titik merah pada wordmark "AQUATiC". Bukan palet Tailwind
-   generik — semua token & komponen dibangun dari sini.
+   Aquatic Legawa — Design System v4 (Putih + Gradasi Identitas)
+   Dasar tetap putih & lapang (bukan permukaan warna penuh), tapi
+   sekarang warna klub hadir lewat gradasi halus — di background
+   utama, kartu kunci, tombol utama, dan panel login — bukan
+   warna flat datar seperti versi sebelumnya.
 ========================================================= */
 :root {
   --teal-950: #082A2C;
@@ -12,7 +12,7 @@
   --teal-700: #106166;
   --teal-600: #147379;
   --teal-100: #DCECEB;
-  --teal-50:  #F0F7F6;
+  --teal-50:  #F4F9F8;
 
   --garnet-900: #55101C;
   --garnet-700: #781627;
@@ -20,17 +20,25 @@
   --garnet-500: #AC2036;
   --garnet-100: #F5E2E4;
 
-  --ink:   #16211F;
-  --ink-60: rgba(22,33,31,.6);
-  --ink-45: rgba(22,33,31,.45);
-  --ink-30: rgba(22,33,31,.3);
-  --paper: #F7F5F0;
-  --paper-line: rgba(22,33,31,.11);
+  --ink:   #1A1F1E;
+  --ink-60: rgba(26,31,30,.6);
+  --ink-45: rgba(26,31,30,.45);
+  --ink-30: rgba(26,31,30,.3);
+  --paper: #FFFFFF;
+  --paper-line: rgba(26,31,30,.09);
   --card: #FFFFFF;
 
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 4px 16px 4px 16px; /* asimetris — motif "sisik" khas lambang, bukan rounded-2xl seragam */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 14px;
+
+  /* Gradasi identitas — dipakai konsisten di seluruh app supaya
+     tim Flutter bisa mereplikasi persis nilai yang sama. */
+  --gradient-hero: linear-gradient(135deg, var(--teal-950) 0%, var(--teal-800) 55%, var(--teal-700) 100%);
+  --gradient-brand: linear-gradient(90deg, var(--teal-700) 0%, var(--teal-900) 100%);
+  --gradient-accent-bar: linear-gradient(90deg, var(--teal-600) 0%, var(--garnet-500) 100%);
+  --gradient-wash: radial-gradient(circle at 8% -10%, rgba(16,97,102,.07) 0%, transparent 45%),
+                    radial-gradient(circle at 100% 0%, rgba(172,32,54,.045) 0%, transparent 40%);
 }
 
 * { box-sizing: border-box; }
@@ -38,27 +46,18 @@ html { scroll-behavior: smooth; }
 body {
   font-family: 'Inter', sans-serif;
   background-color: var(--paper);
+  background-image: var(--gradient-wash);
+  background-attachment: fixed;
   color: var(--ink);
   -webkit-font-smoothing: antialiased;
 }
-.font-display { font-family: 'Montserrat', sans-serif; letter-spacing: -0.01em; }
+.font-display { font-family: 'Montserrat', sans-serif; letter-spacing: -0.015em; }
 .font-nav { font-family: 'Montserrat', sans-serif; }
-
-/* Paper grain — menahan bidang teal/garnet flat supaya tidak terasa plastik/AI-render */
-.grain::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  opacity: .04;
-  z-index: 1;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
 
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #CBDAD8; border-radius: 8px; }
-::-webkit-scrollbar-thumb:hover { background: #9FB8B5; }
+::-webkit-scrollbar-thumb { background: #E3E1DB; border-radius: 8px; }
+::-webkit-scrollbar-thumb:hover { background: #C7C4BB; }
 
 a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
   outline: 2px solid var(--teal-700);
@@ -71,57 +70,53 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 
 .page { display: none; }
 .page.active { display: block; }
-.page-enter { animation: pageIn .32s cubic-bezier(.22,.68,0,1); }
-@keyframes pageIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+.page-enter { animation: pageIn .28s cubic-bezier(.22,.68,0,1); }
+@keyframes pageIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
 @media (prefers-reduced-motion: reduce) {
   * { animation-duration: .001ms !important; transition-duration: .001ms !important; }
 }
 
 /* =========================================================
-   Eyebrow label — titik merah meniru titik pada huruf "i"
-   di wordmark AQUATiC. Dipakai konsisten sebagai penanda
-   bagian, bukan hiasan acak.
+   Eyebrow label — titik merah kecil meniru titik pada huruf
+   "i" di wordmark AQUATiC. Satu-satunya aksen dekoratif yang
+   dipertahankan karena kecil & konsisten, bukan mencolok.
 ========================================================= */
 .eyebrow {
-  display: inline-flex; align-items: center; gap: .45rem;
-  font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: .68rem;
-  letter-spacing: .16em; text-transform: uppercase; color: var(--teal-800);
+  display: inline-flex; align-items: center; gap: .4rem;
+  font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: .68rem;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--ink-45);
 }
-.eyebrow::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--garnet-600); flex-shrink: 0; }
-.on-dark .eyebrow { color: rgba(240,247,246,.75); }
+.eyebrow::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: var(--garnet-600); flex-shrink: 0; }
+.eyebrow.on-dark { color: rgba(255,255,255,.78); }
+
+/* Garis pemisah tipis — pengganti motif bendera backstroke yang lebih ramai.
+   Tetap dari dunia renang (lintasan kolam), tapi jadi satu garis halus. */
+.lane-rope { display: block; width: 100%; height: 1px; background: var(--paper-line); }
+.on-dark .lane-rope { background: rgba(255,255,255,.14); }
 
 /* =========================================================
-   Signature motif — bendera backstroke (backstroke flags)
-   dipakai sebagai pemisah bagian, ganti dari deretan
-   lingkaran generik. Terinspirasi langsung dari cabang
-   olahraga renang, bukan motif dekoratif template AI.
-========================================================= */
-.lane-rope { display: block; width: 100%; height: 12px; }
-.lane-rope .flag-teal { fill: var(--teal-700); }
-.lane-rope .flag-garnet { fill: var(--garnet-500); }
-.lane-rope .rope-line { stroke: var(--ink-30); stroke-width: 1; }
-.on-dark .flag-teal { fill: rgba(255,255,255,.6); }
-.on-dark .flag-garnet { fill: var(--garnet-500); }
-.on-dark .rope-line { stroke: rgba(255,255,255,.32); }
-
-/* =========================================================
-   Cards — panel datar dengan aksen tab warna di sudut,
-   bukan kotak putih rounded-2xl + shadow yang seragam.
+   Cards — putih polos, garis tipis, tanpa bayangan/aksen warna
+   di keadaan normal. Warna hanya muncul saat perlu menandai
+   sesuatu (mis. izin), bukan sebagai dekorasi standar.
 ========================================================= */
 .card {
   position: relative;
   background: var(--card);
   border: 1px solid var(--paper-line);
   border-radius: var(--radius-lg);
-  border-top: 3px solid var(--teal-800);
 }
 .card-flat {
   background: var(--card);
   border: 1px solid var(--paper-line);
   border-radius: var(--radius-md);
 }
-.card-accent-garnet { border-top-color: var(--garnet-600); }
+.card-accent-garnet { border-color: var(--garnet-500); background: var(--garnet-100); }
+
+/* Strip gradasi tipis di atas kartu penting (dashboard, form utama) —
+   pengganti border-top solid teal di versi sebelumnya. */
+.card-brand { padding-top: 3px; background: var(--gradient-accent-bar); border-radius: var(--radius-lg); }
+.card-brand > .card-brand-inner { background: var(--card); border: 1px solid var(--paper-line); border-top: none; border-radius: 0 0 var(--radius-lg) var(--radius-lg); }
 
 .field {
   width: 100%;
@@ -133,44 +128,45 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   color: var(--ink);
   transition: border-color .15s ease, box-shadow .15s ease;
 }
-.field:focus { border-color: var(--teal-700); box-shadow: 0 0 0 3px rgba(16,97,102,.14); outline: none; }
-.field:disabled { background: var(--teal-50); color: var(--ink-60); cursor: not-allowed; }
+.field:focus { border-color: var(--teal-700); box-shadow: 0 0 0 3px rgba(16,97,102,.12); outline: none; }
+.field:disabled { background: #FAFAF8; color: var(--ink-60); cursor: not-allowed; }
 
 .btn-primary {
   display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
-  background: var(--teal-900); color: #fff;
-  font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: .8rem;
-  letter-spacing: .02em; text-transform: uppercase;
+  background: var(--gradient-brand); color: #fff;
+  font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: .8rem;
+  letter-spacing: .01em;
   border-radius: var(--radius-sm);
   padding: .75rem 1.25rem;
   border: 1px solid var(--teal-900);
-  transition: background-color .15s ease, transform .1s ease, border-color .15s ease;
+  transition: filter .15s ease, transform .1s ease, box-shadow .15s ease;
+  box-shadow: 0 1px 2px rgba(11,66,69,.15);
 }
-.btn-primary:hover { background: var(--teal-800); border-color: var(--teal-800); }
+.btn-primary:hover { filter: brightness(1.08); box-shadow: 0 2px 8px rgba(11,66,69,.22); }
 .btn-primary:active { transform: scale(.98); }
-.btn-primary:disabled { background: #B9C9C7; border-color: #B9C9C7; cursor: not-allowed; }
+.btn-primary:disabled { background: #D5D3CC; border-color: #D5D3CC; box-shadow: none; cursor: not-allowed; }
 
 .btn-ghost {
   display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
   background: transparent; color: var(--ink-60);
-  font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: .8rem;
-  letter-spacing: .02em; text-transform: uppercase;
+  font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: .8rem;
+  letter-spacing: .01em;
   border-radius: var(--radius-sm);
   border: 1px solid var(--paper-line);
   padding: .75rem 1.25rem;
   transition: background-color .15s ease, border-color .15s ease;
 }
-.btn-ghost:hover { background: var(--teal-50); border-color: var(--teal-700); }
+.btn-ghost:hover { background: #FAFAF8; border-color: var(--ink-30); }
 
 .tag {
   display: inline-flex; align-items: center;
-  padding: .15rem .6rem; border-radius: 3px;
+  padding: .2rem .55rem; border-radius: 5px;
   font-family: 'Montserrat', sans-serif;
-  font-size: .65rem; font-weight: 800; letter-spacing: .04em; text-transform: uppercase;
+  font-size: .68rem; font-weight: 600; letter-spacing: .01em;
 }
-.tag-teal { background: var(--teal-100); color: var(--teal-900); }
-.tag-garnet { background: var(--garnet-100); color: var(--garnet-700); }
-.tag-amber { background: #FBEFD7; color: #8A5A11; }
+.tag-teal { background: var(--teal-50); color: var(--teal-800); border: 1px solid var(--teal-100); }
+.tag-garnet { background: var(--garnet-100); color: var(--garnet-700); border: 1px solid rgba(172,32,54,.18); }
+.tag-amber { background: #FBF3E3; color: #8A5A11; border: 1px solid #F0DFB8; }
 
 .role-btn {
   border-radius: var(--radius-sm);
@@ -180,34 +176,34 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   text-align: center;
   transition: border-color .15s ease, background-color .15s ease;
 }
-.role-btn:hover { border-color: var(--teal-700); }
+.role-btn:hover { border-color: var(--ink-30); }
 .role-btn-active { border-color: var(--teal-700); background: var(--teal-50); box-shadow: inset 0 0 0 1px var(--teal-700); }
 
 .auth-tab { color: var(--ink-45); font-family: 'Montserrat', sans-serif; }
-.auth-tab.auth-tab-active { background: var(--card); color: var(--teal-900); box-shadow: 0 1px 2px rgba(11,66,69,.14); }
+.auth-tab.auth-tab-active { background: var(--card); color: var(--ink); box-shadow: 0 1px 2px rgba(26,31,30,.08); }
 
 /* =========================================================
-   Navigation — garis indeks di kiri, bukan pill/rounded-full
+   Navigation — garis indeks tipis di kiri, tanpa pill/rounded-full
 ========================================================= */
 .nav-item {
   width: 100%; display: flex; align-items: center; gap: .75rem;
-  padding: .65rem .9rem; border-radius: 3px;
-  font-size: .82rem; font-weight: 600;
-  color: rgba(240,247,246,.72);
-  border-left: 3px solid transparent;
+  padding: .6rem .85rem; border-radius: 4px;
+  font-size: .82rem; font-weight: 500;
+  color: var(--ink-60);
+  border-left: 2px solid transparent;
   transition: background-color .15s ease, color .15s ease, border-color .15s ease;
 }
-.nav-item:hover { background: rgba(255,255,255,.06); color: #fff; }
+.nav-item:hover { background: #FAFAF8; color: var(--ink); }
 .nav-item.active-nav {
-  background: rgba(255,255,255,.09);
-  color: #fff;
+  background: linear-gradient(90deg, var(--teal-50) 0%, rgba(244,249,248,.3) 100%);
+  color: var(--teal-900);
   border-left-color: var(--garnet-500);
 }
 
 .bottom-item {
   position: relative; flex: 1;
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
-  font-size: 10px; font-weight: 700; color: var(--ink-45);
+  font-size: 10px; font-weight: 600; color: var(--ink-45);
   font-family: 'Montserrat', sans-serif;
   padding-bottom: env(safe-area-inset-bottom, 0);
 }
@@ -216,59 +212,56 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 .bottom-item.active-nav .dot { opacity: 1; }
 
 /* =========================================================
-   Scoreboard — papan skor kolam sungguhan: angka besar
-   tabular, label kecil huruf kapital, garis pemisah tegas.
+   Scoreboard — dulu blok teal gelap penuh; sekarang panel
+   putih dengan angka besar berwarna, garis pemisah tipis.
+   Lebih senyap, tapi angkanya tetap jadi fokus utama.
 ========================================================= */
 .scoreboard {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  background: var(--teal-900);
+  background: var(--card);
+  border: 1px solid var(--paper-line);
   border-radius: var(--radius-lg);
   overflow: hidden;
   position: relative;
 }
-.scoreboard::before {
-  content: "";
-  position: absolute; top: 0; left: 0; right: 0; height: 3px;
-  background: repeating-linear-gradient(90deg, var(--garnet-500) 0 14px, transparent 14px 28px);
-}
+.scoreboard::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--gradient-accent-bar); }
 @media (min-width: 640px) { .scoreboard { grid-template-columns: repeat(4, 1fr); } }
 .scoreboard-col {
-  padding: 1.2rem 1.1rem;
-  border-right: 1px solid rgba(255,255,255,.08);
-  border-bottom: 1px solid rgba(255,255,255,.08);
+  padding: 1.15rem 1.2rem;
+  border-right: 1px solid var(--paper-line);
+  border-bottom: 1px solid var(--paper-line);
 }
 @media (min-width: 640px) { .scoreboard-col { border-bottom: none; } }
 .scoreboard-col:nth-child(2n) { border-right: none; }
 @media (min-width: 640px) {
-  .scoreboard-col:nth-child(2n) { border-right: 1px solid rgba(255,255,255,.08); }
+  .scoreboard-col:nth-child(2n) { border-right: 1px solid var(--paper-line); }
   .scoreboard-col:last-child { border-right: none; }
 }
-.scoreboard-label { font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .09em; color: rgba(240,247,246,.55); font-family: 'Montserrat', sans-serif; }
-.scoreboard-value { font-family: 'Montserrat', sans-serif; font-weight: 900; letter-spacing: -0.02em; font-size: 2rem; color: #fff; margin-top: .3rem; font-variant-numeric: tabular-nums; }
-.scoreboard-sub { font-size: .72rem; color: rgba(240,247,246,.5); margin-top: .15rem; }
+.scoreboard-label { font-size: .68rem; font-weight: 600; letter-spacing: .02em; color: var(--ink-45); font-family: 'Montserrat', sans-serif; }
+.scoreboard-value { font-family: 'Montserrat', sans-serif; font-weight: 800; letter-spacing: -0.02em; font-size: 1.9rem; color: var(--ink); margin-top: .3rem; font-variant-numeric: tabular-nums; }
+.scoreboard-sub { font-size: .74rem; color: var(--ink-45); margin-top: .15rem; }
 
 /* =========================================================
-   Tables — heat sheet: header huruf kapital tipografis,
-   angka rata tabular, tanpa zebra-stripe generik.
+   Tables — header huruf kecil, garis tipis, tanpa hover berat
 ========================================================= */
 .data-table { width: 100%; font-size: .855rem; border-collapse: collapse; }
 .data-table thead th {
-  text-align: left; padding: .8rem 1.15rem;
+  text-align: left; padding: .75rem 1.1rem;
   font-family: 'Montserrat', sans-serif;
-  font-size: .65rem; font-weight: 800; text-transform: uppercase; letter-spacing: .08em;
+  font-size: .68rem; font-weight: 600; letter-spacing: .03em;
   color: var(--ink-45);
-  border-bottom: 2px solid var(--ink);
+  border-bottom: 1px solid var(--paper-line);
 }
-.data-table tbody td { padding: .8rem 1.15rem; border-bottom: 1px solid var(--paper-line); color: var(--ink); font-variant-numeric: tabular-nums; }
+.data-table tbody td { padding: .8rem 1.1rem; border-bottom: 1px solid var(--paper-line); color: var(--ink); font-variant-numeric: tabular-nums; }
 .data-table tbody tr:last-child td { border-bottom: none; }
-.data-table tbody tr:hover { background: var(--teal-50); }
+.data-table tbody tr:hover { background: #FAFAF8; }
 
 /* =========================================================
    Modals
 ========================================================= */
-.modal-backdrop { background: rgba(8,20,19,.65); backdrop-filter: blur(2px); }
-.modal-panel { background: var(--card); border-radius: var(--radius-lg); border-top: 3px solid var(--teal-800); }
+.modal-backdrop { background: rgba(15,20,19,.5); backdrop-filter: blur(2px); }
+.modal-panel { background: var(--card); border-radius: var(--radius-lg); border: 1px solid var(--paper-line); }
 
 /* =========================================================
    Toast
@@ -281,7 +274,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 
 /* Skeleton loading shimmer */
 .skeleton-shimmer {
-  background: linear-gradient(90deg, var(--teal-50) 25%, #E6F0EF 37%, var(--teal-50) 63%);
+  background: linear-gradient(90deg, #F4F3EF 25%, #FAFAF8 37%, #F4F3EF 63%);
   background-size: 400% 100%;
   animation: shimmer 1.4s ease infinite;
 }
@@ -294,16 +287,21 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 }
 
 /* =========================================================
-   Login hero — pola gelombang & lintasan, ganti dari bidang
-   teal flat polos supaya tidak terasa placeholder generik.
+   Efek air di panel login — riak (ripple), gelembung halus, dan
+   tekstur cahaya kaustik (pola cahaya yang terbias lewat permukaan
+   air). Murni SVG/CSS, tanpa foto, supaya tetap ringan & tidak ada
+   figur manusia. Diletakkan di belakang teks (z-0), teksnya sendiri
+   tetap z-10.
 ========================================================= */
-.hero-waves {
-  position: absolute; inset: 0; z-index: 0; opacity: .5;
-  background-image:
-    repeating-linear-gradient(180deg, rgba(255,255,255,.05) 0 1px, transparent 1px 46px);
+.hero-water {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
 }
-.hero-lanes {
-  position: absolute; left: 0; right: 0; bottom: 0; height: 40%; z-index: 0;
-  background: repeating-linear-gradient(90deg, rgba(255,255,255,.045) 0 2px, transparent 2px 96px);
-  mask-image: linear-gradient(to top, black, transparent);
+.hero-water svg {
+  width: 100%;
+  height: 100%;
+  display: block;
 }

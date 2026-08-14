@@ -39,14 +39,7 @@ const NAV_CONFIG = {
 };
 
 function laneRope() {
-  // Motif bendera backstroke (segitiga kecil bergantian teal/garnet) —
-  // diambil langsung dari perlengkapan kolam renang, bukan hiasan generik.
-  let flags = '';
-  for (let x = 6; x <= 594; x += 24) {
-    const teal = (x / 24) % 2 === 0;
-    flags += `<path d="M${x-4} 0 L${x+4} 0 L${x} 8 Z" class="${teal ? 'flag-teal' : 'flag-garnet'}"/>`;
-  }
-  return `<svg class="lane-rope" viewBox="0 0 600 10" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><line x1="0" y1="0" x2="600" y2="0" class="rope-line"/>${flags}</svg>`;
+  return `<div class="lane-rope"></div>`;
 }
 
 /* =========================================================
@@ -475,7 +468,7 @@ async function pageAdminAnggota() {
   return `
     ${pageHeader('Admin · Keanggotaan', 'Data Anggota', 'Daftar pelatih dan atlet, dipisah per kategori supaya lebih mudah dikelola.')}
 
-    <div class="card p-5 mb-6">
+    <div class="card-brand mb-6"><div class="card-brand-inner p-5">
       <p class="font-display font-bold text-sm text-ink mb-3">Tambah Anggota Manual</p>
       <form id="add-member-form" class="grid sm:grid-cols-4 gap-3">
         <input required name="nama" placeholder="Nama" class="field sm:col-span-1">
@@ -488,7 +481,7 @@ async function pageAdminAnggota() {
         <button type="submit" class="btn-primary sm:col-span-4">Tambah Anggota</button>
       </form>
       <p class="text-xs text-ink/40 mt-3">Anggota yang mendaftar sendiri lewat halaman Daftar &amp; sudah disetujui admin akan otomatis muncul di sini juga — tidak perlu ditambah manual lagi.</p>
-    </div>
+    </div></div>
 
     <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
       <div class="flex gap-1 p-1 rounded-[8px]" style="background:var(--teal-50)">
@@ -519,7 +512,7 @@ function anggotaMemberTable(rows) {
           ${rows.map(r => `
             <tr>
               <td class="font-medium flex items-center gap-2.5">
-                ${r.avatar_url ? `<img src="${esc(r.avatar_url)}" class="h-7 w-7 rounded-full object-cover shrink-0" alt="">` : `<span class="h-7 w-7 rounded-full shrink-0 flex items-center justify-center text-[10px] font-bold" style="background:var(--teal-100); color:var(--teal-900)">${esc((r.nama||'?').charAt(0).toUpperCase())}</span>`}
+                ${r.avatar_url ? `<img src="${esc(r.avatar_url)}" class="h-7 w-7 rounded-full object-cover shrink-0" alt="">` : `<span class="h-7 w-7 rounded-full shrink-0 flex items-center justify-center text-[10px] font-bold" style="background:var(--gradient-brand); color:#fff">${esc((r.nama||'?').charAt(0).toUpperCase())}</span>`}
                 ${esc(r.nama)}
               </td>
               <td class="text-ink/55 hidden sm:table-cell">${esc(r.email || '—')}</td>
@@ -568,7 +561,7 @@ async function pageAdminAbsensi() {
     return `
     <div class="card p-4 flex flex-col sm:flex-row gap-4 ${isIzin ? 'card-accent-garnet' : ''}">
       <div class="flex items-center gap-3 sm:w-56 shrink-0">
-        ${p.avatar_url ? `<img src="${esc(p.avatar_url)}" class="h-11 w-11 rounded-full object-cover shrink-0" alt="">` : `<span class="h-11 w-11 rounded-full shrink-0 flex items-center justify-center text-xs font-bold" style="background:var(--teal-100); color:var(--teal-900)">${esc((p.full_name||'?').charAt(0).toUpperCase())}</span>`}
+        ${p.avatar_url ? `<img src="${esc(p.avatar_url)}" class="h-11 w-11 rounded-full object-cover shrink-0" alt="">` : `<span class="h-11 w-11 rounded-full shrink-0 flex items-center justify-center text-xs font-bold" style="background:var(--gradient-brand); color:#fff">${esc((p.full_name||'?').charAt(0).toUpperCase())}</span>`}
         <div class="min-w-0">
           <p class="font-display font-bold text-sm text-ink truncate">${esc(p.full_name || p.email)}</p>
           <p class="text-xs text-ink/45 truncate">${esc(p.category || '—')}</p>
@@ -662,7 +655,7 @@ async function pageAdminInvois() {
   return `
     ${pageHeader('Admin · Keuangan', 'Sistem Invois', 'Riwayat tagihan iuran dan biaya tambahan seluruh anggota.')}
 
-    <div class="card p-5 mb-6">
+    <div class="card-brand mb-6"><div class="card-brand-inner p-5">
       <p class="font-display font-bold text-sm text-ink mb-3">Buat Invois Baru</p>
       <form id="add-invoice-form" class="grid sm:grid-cols-4 gap-3">
         <input required name="member_name" placeholder="Nama anggota" class="field sm:col-span-1">
@@ -675,7 +668,7 @@ async function pageAdminInvois() {
         </select>
         <button type="submit" class="btn-primary sm:col-span-4">Buat Invois</button>
       </form>
-    </div>
+    </div></div>
 
     ${invoiceTable(invoices || [], true)}
   `;
