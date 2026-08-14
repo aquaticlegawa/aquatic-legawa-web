@@ -39,14 +39,7 @@ const NAV_CONFIG = {
 };
 
 function laneRope() {
-  // Motif bendera backstroke (segitiga kecil bergantian teal/garnet) —
-  // diambil langsung dari perlengkapan kolam renang, bukan hiasan generik.
-  let flags = '';
-  for (let x = 6; x <= 594; x += 24) {
-    const teal = (x / 24) % 2 === 0;
-    flags += `<path d="M${x-4} 0 L${x+4} 0 L${x} 8 Z" class="${teal ? 'flag-teal' : 'flag-garnet'}"/>`;
-  }
-  return `<svg class="lane-rope" viewBox="0 0 600 10" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><line x1="0" y1="0" x2="600" y2="0" class="rope-line"/>${flags}</svg>`;
+  return `<div class="lane-rope"></div>`;
 }
 
 /* =========================================================
@@ -532,16 +525,21 @@ function anggotaMemberTable(rows) {
   </div>`;
 }
 
-/* ---------------- ADMIN: Data Absensi (tab Pelatih/Atlet + filter cabang + foto/izin) ---------------- */
+/* ---------------- ADMIN: Data Absensi (tab Pelatih/Atlet + filter cabang & tanggal + foto/izin) ---------------- */
 let absensiAdminTab = 'pelatih';
 let absensiAdminFilter = '';
+let absensiAdminDate = '';
 
 async function pageAdminAbsensi() {
-  const { data: rows, error } = await sb
-    .from('attendance')
-    .select('*, profiles(full_name, email, role, category, avatar_url)')
-    .order('created_at', { ascending: false })
-    .limit(200);
+  let query = sb.from('attendance').select('*, profiles(full_name, email, role, category, avatar_url)').order('created_at', { ascending: false });
+  if (absensiAdminDate) {
+    const start = `${absensiAdminDate}T00:00:00`;
+    const end = new Date(new Date(`${absensiAdminDate}T00:00:00`).getTime() + 86400000).toISOString();
+    query = query.gte('created_at', start).lt('created_at', end);
+  } else {
+    query = query.limit(200);
+  }
+  const { data: rows, error } = await query;
   if (error) throw error;
 
   const cabangOptions = ['Renang', 'Polo Air', 'Loncat Indah', 'Renang Indah'];
@@ -578,7 +576,9 @@ async function pageAdminAbsensi() {
         </div>
       </div>
     </div>`;
-  }).join('') : emptyState('Belum ada data absensi untuk kategori/filter ini.');
+  }).join('') : emptyState(absensiAdminDate ? `Tidak ada data absensi pada ${formatDate(absensiAdminDate)} untuk kategori/filter ini.` : 'Belum ada data absensi untuk kategori/filter ini.');
+
+  const todayStr = new Date().toISOString().slice(0, 10);
 
   return `
     ${pageHeader('Admin · Kehadiran', 'Data Absensi', 'Rekap kehadiran &amp; pengajuan izin, lengkap dengan bukti foto.')}
@@ -588,11 +588,16 @@ async function pageAdminAbsensi() {
         ${tabBtn('pelatih', 'Pelatih', countPelatih)}
         ${tabBtn('atlet', 'Atlet', countAtlet)}
       </div>
-      <select id="absensi-admin-filter-cabang" class="field !py-2 !text-xs" style="width:auto; min-width:170px">
-        <option value="" ${!absensiAdminFilter?'selected':''}>Semua Cabang Olahraga</option>
-        ${cabangOptions.map(c => `<option value="${c}" ${absensiAdminFilter===c?'selected':''}>${absensiAdminTab==='pelatih'?'Pelatih':'Atlet'} ${c}</option>`).join('')}
-      </select>
+      <div class="flex items-center gap-2 flex-wrap">
+        <input type="date" id="absensi-admin-filter-date" value="${absensiAdminDate}" max="${todayStr}" class="field !py-2 !text-xs" style="width:auto">
+        ${absensiAdminDate ? `<button id="absensi-admin-date-clear" class="text-xs font-semibold text-[var(--teal-700)] hover:text-[var(--teal-900)]">Reset tanggal</button>` : `<button id="absensi-admin-date-today" class="text-xs font-semibold text-[var(--teal-700)] hover:text-[var(--teal-900)]">Hari ini</button>`}
+        <select id="absensi-admin-filter-cabang" class="field !py-2 !text-xs" style="width:auto; min-width:170px">
+          <option value="" ${!absensiAdminFilter?'selected':''}>Semua Cabang Olahraga</option>
+          ${cabangOptions.map(c => `<option value="${c}" ${absensiAdminFilter===c?'selected':''}>${absensiAdminTab==='pelatih'?'Pelatih':'Atlet'} ${c}</option>`).join('')}
+        </select>
+      </div>
     </div>
+    ${absensiAdminDate ? `<p class="text-xs text-ink/45 mb-4">Menampilkan absensi tanggal <strong>${formatDate(absensiAdminDate)}</strong> saja.</p>` : ''}
 
     <div class="space-y-3">${cards}</div>
   `;
@@ -924,6 +929,12 @@ function bindPageEvents(key) {
   }));
   const absensiFilterSel = document.getElementById('absensi-admin-filter-cabang');
   if (absensiFilterSel) absensiFilterSel.addEventListener('change', () => { absensiAdminFilter = absensiFilterSel.value; renderPage('absensi-admin'); });
+  const absensiDateInput = document.getElementById('absensi-admin-filter-date');
+  if (absensiDateInput) absensiDateInput.addEventListener('change', () => { absensiAdminDate = absensiDateInput.value; renderPage('absensi-admin'); });
+  const absensiDateToday = document.getElementById('absensi-admin-date-today');
+  if (absensiDateToday) absensiDateToday.addEventListener('click', () => { absensiAdminDate = new Date().toISOString().slice(0, 10); renderPage('absensi-admin'); });
+  const absensiDateClear = document.getElementById('absensi-admin-date-clear');
+  if (absensiDateClear) absensiDateClear.addEventListener('click', () => { absensiAdminDate = ''; renderPage('absensi-admin'); });
 
   /* ---- Agenda: buka detail, tambah, edit ---- */
   document.querySelectorAll('.event-item-btn').forEach(b => b.addEventListener('click', () => openEventDetail(b.dataset.eventId)));

@@ -26,8 +26,12 @@ Yang berubah di aplikasi:
 - **Notifikasi WhatsApp ke admin** saat ada yang mengajukan izin — ini
   **opsional**, harus diaktifkan dulu. Buka `js/supabase-client.js`, ikuti
   instruksi di komentar `WA_ADMIN_PHONE` / `WA_APIKEY` (pakai layanan gratis
-  CallMeBot, tidak perlu WhatsApp Business API). Kalau tidak diisi, fitur ini
-  otomatis dilewati tanpa error.
+  CallMeBot, tidak perlu WhatsApp Business API). **Catatan per Agustus 2026:
+  bot CallMeBot sedang penuh** (nomornya disembunyikan di situs resminya
+  sampai ada slot baru) — cek status terkininya di
+  callmebot.com/blog/free-api-whatsapp-messages sebelum mengisi kedua
+  variabel ini. Kalau tidak diisi, fitur ini otomatis dilewati tanpa error
+  — admin tetap bisa melihat semua pengajuan izin lewat menu "Data Absensi".
 
 ---
 
